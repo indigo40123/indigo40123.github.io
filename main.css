@@ -27,8 +27,8 @@ ul.navbar {
 	padding: 0;
 	overflow: hidden;
 	background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
-	-webkit-transition: all 1.0s;
-	transition: all 1.0s;
+	-webkit-transition: all 2.0s;
+	transition: all 2.0s;
 }
 
 li.navbar {
@@ -36,13 +36,13 @@ li.navbar {
 }
 
 li.navbar a {
-	height: 24px;
+	height: 36px;
 	display: block;
 	color: #FFFFFF;
 	text-align: center;
-	font-size: 16px;
-	letter-spacing: 0.2em;
-	padding: 12px 16px;
+	font-size: 20px;
+	letter-spacing: 0.4em;
+	padding: 16px 20px;
 	text-decoration: none;
 }
 
