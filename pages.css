@@ -28,8 +28,7 @@ ul.navbar {
 	padding: 0;
 	overflow: hidden;
 	background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
-	-webkit-transition: all 999.0s;
-	transition: all 999.0s;
+
 }
 
 li.navbar {
