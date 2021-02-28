@@ -28,8 +28,8 @@ ul.navbar {
 	padding: 0;
 	overflow: hidden;
 	background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
-	-webkit-transition: all 2.0s;
-	transition: all 2.0s;
+	-webkit-transition: all 999.0s;
+	transition: all 999.0s;
 }
 
 li.navbar {
@@ -70,7 +70,7 @@ li.navbar a:hover, li.navbar a:active {
 	display: block;
 	color: #FFFFFF;
 	text-align: center;
-	font-size: 16px;
+	font-size: 20px;
 	letter-spacing: 0.2em;
 	padding: 12px 16px;
 	text-decoration: none;
