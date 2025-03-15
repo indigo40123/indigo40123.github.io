@@ -31,8 +31,8 @@ const particleDescriptions = {
     neutron: {
         title: 'Neutron (n)',
         energy: '10 MeV',
-        description: 'Neutrons themselves do not produce Cherenkov light as they are electrically neutral. The cyan color shows the neutron\'s path. When captured by Gadolinium (Gd), neutrons produce 2-8 electron signals with a total energy of about 8 MeV, resulting in approximately 300 PMT hits.',
-        physics: 'Neutrons interact with water primarily through elastic scattering with hydrogen nuclei. In Gd-doped water, neutrons are often captured by Gadolinium, which then emits gamma rays with a total energy of about 8 MeV. These gamma rays create electrons through Compton scattering or pair production, which then produce Cherenkov light.'
+        description: 'Neutrons themselves do not produce Cherenkov light as they are electrically neutral. The cyan color shows the neutron\'s path. In this simulation, neutrons are captured at around 1m from their starting point, producing 3-5 electrons (shown in gold color) that create Cherenkov light.',
+        physics: 'Neutrons interact with water primarily through elastic scattering with hydrogen nuclei. When captured, they produce electrons through various processes. These electrons then produce Cherenkov light as they travel through the water at speeds greater than the speed of light in water.'
     }
 };
 
@@ -43,9 +43,9 @@ let autoRotate = false; // Default rotation speed is 0
 let rotationSpeed = 0.0001;
 
 // Detector parameters
-const detectorRadius = 40;
-const detectorHeight = 80;
-const pmtRadius = 0.5; // Smaller PMT markers
+const detectorRadius = 40; // Changed from 40 to 17 as per user's specification
+const detectorHeight = 80; // Changed to maintain the same aspect ratio
+const pmtRadius = 0.3; // Smaller PMT markers
 const pmtCount = 12000; // Realistic number of PMTs for a large water Cherenkov detector
 const pmts = [];
 
@@ -220,9 +220,7 @@ function createDetector() {
         }
     }
     
-    // Add coordinate axes for reference
-    const axesHelper = new THREE.AxesHelper(Math.max(detectorRadius, detectorHeight/2) * 1.2);
-    scene.add(axesHelper);
+    // Axes helper removed as requested
     
     // Log the actual number of PMTs created
     console.log(`Created ${pmts.length} PMTs`);
@@ -341,6 +339,10 @@ function generateParticleTrack(type) {
                 Math.random() * 2 - 1
             ).normalize();
             
+            // Calculate the target distance for neutron capture (random between 10-30 units)
+            const captureDistance = 10.0 + Math.random() * 20.0; // Random between 10-30 units
+            let totalDistance = 0;
+            
             for (let i = 0; i < 40; i++) {
                 particleTrack.push(nPos.clone());
                 
@@ -356,8 +358,14 @@ function generateParticleTrack(type) {
                 }
                 nDir.normalize();
                 
-                const step = 3 + Math.random() * 1;
+                const step = 1.0 + Math.random() * 0.5; // Larger steps to allow neutron to travel the full 50 units
                 nPos.add(nDir.clone().multiplyScalar(step));
+                totalDistance += step;
+                
+                // Check if we've reached the capture distance
+                if (totalDistance >= captureDistance) {
+                    break;
+                }
                 
                 // Ensure we stay within detector (cylinder bounds check)
                 const distFromAxis = Math.sqrt(nPos.x * nPos.x + nPos.z * nPos.z);
@@ -459,44 +467,95 @@ function generatePMTHits(type) {
             
         case 'neutron':
             // Neutrons themselves don't create Cherenkov light
-            // But when captured by Gadolinium, they produce 2-8 electron signals
+            // But when captured, they produce 3-5 electron signals as specified
             
-            // Simulate Gd capture: create 2-8 electron-like events
-            const numElectronSignals = Math.floor(Math.random() * 7) + 2; // 2-8 signals
+            // Simulate capture: create 3-5 electron-like events
+            const numElectronSignals = Math.floor(Math.random() * 3) + 3; // 3-5 signals
             
-            // Create electron signals at random positions along the neutron path
+            // Get the capture position (last point in neutron track)
+            const capturePos = particleTrack[particleTrack.length - 1].clone();
+            
+            // Create electron tracks from the capture point
+            const electronTracks = [];
             for (let i = 0; i < numElectronSignals; i++) {
-                // Pick a random point along the neutron path
-                const pathIndex = Math.floor(Math.random() * particleTrack.length);
-                const electronPos = particleTrack[pathIndex].clone();
-                
-                // Create a small electron shower from this point
+                // Create a random direction for each electron
                 const electronDir = new THREE.Vector3(
                     Math.random() * 2 - 1,
                     Math.random() * 2 - 1,
                     Math.random() * 2 - 1
                 ).normalize();
                 
-                // Activate PMTs in a cone pattern from this electron
-                pmts.forEach((pmt, index) => {
-                    const toPMT = pmt.position.clone().sub(electronPos);
-                    const distance = toPMT.length();
-                    toPMT.normalize();
+                // Create electron track
+                const electronTrack = [];
+                let ePos = capturePos.clone();
+                
+                // Generate electron path
+                for (let j = 0; j < 15; j++) {
+                    electronTrack.push(ePos.clone());
                     
-                    // Angle between electron direction and PMT
-                    const angle = Math.acos(toPMT.dot(electronDir));
+                    // Random scattering for electron
+                    electronDir.x += (Math.random() - 0.5) * 0.4;
+                    electronDir.y += (Math.random() - 0.5) * 0.4;
+                    electronDir.z += (Math.random() - 0.5) * 0.4;
+                    electronDir.normalize();
                     
-                    // Activate PMTs in a cone pattern (Cherenkov light)
-                    if (Math.abs(angle - Math.PI/4) < 0.3 && distance < detectorRadius * 0.8) {
-                        const probability = 0.7 - Math.abs(angle - Math.PI/4) / 0.3;
-                        if (Math.random() < probability) {
-                            activatePMT(index, 0.6 + Math.random() * 0.4);
-                        }
+                    const step = 0.5 + Math.random() * 0.5;
+                    ePos.add(electronDir.clone().multiplyScalar(step));
+                    
+                    // Ensure we stay within detector
+                    const distFromAxis = Math.sqrt(ePos.x * ePos.x + ePos.z * ePos.z);
+                    if (distFromAxis > detectorRadius * 0.9 || 
+                        Math.abs(ePos.y) > detectorHeight * 0.48) {
+                        break;
                     }
+                }
+                
+                electronTracks.push(electronTrack);
+                
+                // Draw electron track with gold color
+                const material = new THREE.LineBasicMaterial({ 
+                    color: 0xFFD700, // Gold color for electron tracks
+                    linewidth: 2
+                });
+                
+                const geometry = new THREE.BufferGeometry().setFromPoints(electronTrack);
+                const line = new THREE.Line(geometry, material);
+                particleGroup.add(line);
+                
+                // Add small spheres at each point for better visibility
+                const sphereGeometry = new THREE.SphereGeometry(0.3, 8, 8);
+                const sphereMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0xFFD700 // Gold color
+                });
+                
+                electronTrack.forEach(point => {
+                    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                    sphere.position.copy(point);
+                    particleGroup.add(sphere);
+                });
+                
+                // Activate PMTs for each electron
+                electronTrack.forEach(pos => {
+                    pmts.forEach((pmt, index) => {
+                        const toPMT = pmt.position.clone().sub(pos);
+                        const distance = toPMT.length();
+                        toPMT.normalize();
+                        
+                        // Angle between electron direction and PMT
+                        const angle = Math.acos(toPMT.dot(electronDir));
+                        
+                        // Activate PMTs in a cone pattern (Cherenkov light)
+                        if (Math.abs(angle - Math.PI/4) < 0.3 && distance < detectorRadius * 0.8) {
+                            const probability = 0.7 - Math.abs(angle - Math.PI/4) / 0.3;
+                            if (Math.random() < probability) {
+                                activatePMT(index, 0.6 + Math.random() * 0.4);
+                            }
+                        }
+                    });
                 });
             }
             
-            // Ensure approximately 300 PMT hits in total for 8 MeV energy
+            // Ensure approximately 300 PMT hits in total
             const targetHits = 300;
             const currentHits = activePMTs.length;
             
