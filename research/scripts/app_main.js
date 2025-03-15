@@ -28,7 +28,7 @@ $(document).ready(function() {
 
 // navbar
 $(function(){
-	$("#header").load("navbar_main.html"); 
+	$("#header").load("../navbar_pages.html"); 
 });
 
 // hide navbar by moving out of window 100px
@@ -80,5 +80,5 @@ $(document).ready(
 
 // footer
 $(function(){
-	$("#footer").load("footer.html"); 
+	$("#footer").load("../footer.html"); 
 });
