@@ -556,7 +556,7 @@ function generatePMTHits(type) {
             }
             
             // Ensure approximately 300 PMT hits in total
-            const targetHits = 300;
+            const targetHits = 100 + 50 * Math.random();
             const currentHits = activePMTs.length;
             
             // If we need more hits, add them randomly
