@@ -59,7 +59,7 @@ function initScene() {
     
     // Create camera
     camera = new THREE.PerspectiveCamera(60, 600 / 400, 0.1, 1000);
-    camera.position.set(0, 0, 150);
+    camera.position.set(0, -10, 120);
     
     // Create renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -539,18 +539,19 @@ function generatePMTHits(type) {
                         const angle = Math.acos(toPMT.dot(electronDir));
                         
                         // Activate PMTs in a cone pattern (Cherenkov light)
-                        if (Math.abs(angle - Math.PI/4) < 0.3 && distance < detectorRadius * 0.8) {
-                            const probability = 0.7 - Math.abs(angle - Math.PI/4) / 0.3;
+                        // Reduced angle range, distance check, and probability to lower PMT hit count
+                        if (Math.abs(angle - Math.PI/4) < 0.2 && distance < detectorRadius * 0.6) {
+                            const probability = 0.4 - Math.abs(angle - Math.PI/4) / 0.2;
                             if (Math.random() < probability) {
-                                activatePMT(index, 0.6 + Math.random() * 0.4);
+                                activatePMT(index, 0.5 + Math.random() * 0.3);
                             }
                         }
                     });
                 });
             }
             
-            // Ensure approximately 300 PMT hits in total
-            const targetHits = 100 + 50 * Math.random();
+            // Ensure approximately 90-150 PMT hits in total
+            const targetHits = 90 + 60 * Math.random();
             const currentHits = activePMTs.length;
             
             // If we need more hits, add them randomly
