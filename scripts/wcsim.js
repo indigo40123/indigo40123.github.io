@@ -16,24 +16,18 @@ const particleColors = {
 };
 
 const particleDescriptions = {
-    electron: {
-        title: 'Electron (e⁻)',
-        energy: '5 MeV',
-        description: 'Electrons produce a fuzzy, scattered Cherenkov light pattern due to their light mass and tendency to scatter and shower. The light green color represents the electron track in the detector.',
-        physics: 'Electrons travel at speeds greater than the speed of light in water, producing Cherenkov radiation in a cone around their path. They quickly lose energy through ionization and bremsstrahlung, creating electromagnetic showers.'
-    },
-    muon: {
-        title: 'Muon (μ⁻)',
-        energy: '500 MeV',
-        description: 'Muons produce clear, ring-shaped Cherenkov light patterns as they travel in relatively straight lines through the detector. The white color represents the muon track. At 500 MeV, a muon will trigger approximately half of the PMTs in the detector.',
-        physics: 'Muons are about 200 times heavier than electrons, so they travel in straighter paths and produce clearer Cherenkov rings. They lose energy primarily through ionization but travel much farther than electrons before stopping.'
-    },
-    neutron: {
-        title: 'Neutron (n)',
-        energy: '10 MeV',
-        description: 'Neutrons themselves do not produce Cherenkov light as they are electrically neutral. The cyan color shows the neutron\'s path. In this simulation, neutrons are captured at around 1m from their starting point, producing 3-5 electrons (shown in gold color) that create Cherenkov light.',
-        physics: 'Neutrons interact with water primarily through elastic scattering with hydrogen nuclei. When captured, they produce electrons through various processes. These electrons then produce Cherenkov light as they travel through the water at speeds greater than the speed of light in water.'
-    }
+electron: {
+title: 'Electron (e⁻)',
+description: 'Electrons travel at speeds greater than the speed of light in water, producing Cherenkov radiation in a cone around their path. They quickly lose energy through ionization and bremsstrahlung, creating electromagnetic showers.',
+},
+muon: {
+title: 'Muon (μ⁻)',
+description: 'Muons are about 200 times heavier than electrons, so they travel in straighter paths and produce clearer Cherenkov rings. They lose energy primarily through ionization but travel much farther than electrons before stopping.',
+},
+neutron: {
+title: 'Neutron (n)',
+description: 'Neutrons themselves do not produce Cherenkov light as they are electrically neutral. The cyan color shows the neutron\'s path. In this simulation, neutrons are captured from their starting point, producing 3-5 gammas (shown in yellow color) that create Cherenkov light.',
+}
 };
 
 // Three.js variables
@@ -645,11 +639,10 @@ function updateInfoPanel(type) {
     const info = particleDescriptions[type];
     const detailsDiv = document.getElementById('wcsim-details');
     
+    // Only show title and description, no Energy or Physics sections
     detailsDiv.innerHTML = `
         <h4>${info.title}</h4>
-        <p><strong>Energy:</strong> ${info.energy}</p>
         <p>${info.description}</p>
-        <p><strong>Physics:</strong> ${info.physics}</p>
     `;
 }
 
