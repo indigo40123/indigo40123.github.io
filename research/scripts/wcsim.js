@@ -10,7 +10,7 @@
 
 // Particle parameters
 const particleColors = {
-    electron: FFD700, // gold
+    electron: 0xFFD700, // gold
     muon: 0xFFFFFF,     // white
     neutron: 0x00FFFF   // cyan
 };
