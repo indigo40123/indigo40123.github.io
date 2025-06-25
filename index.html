@@ -6,6 +6,87 @@
 	<title>LiCheng Feng</title>
 	<link rel = "icon" type = "image/x-icon" href = "img/icon.png"/>
 	<link rel="stylesheet" type="text/css" href="main.css">
+	
+	<!-- Three.js library for WCSim -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+	
+	<style>
+		/* WCSim Styles */
+		.wcsim-container {
+			margin: 20px 0;
+			padding: 15px;
+			background-color: #f5f5f5;
+			border-radius: 8px;
+		}
+		
+		.wcsim-controls {
+			margin: 15px 0;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 10px;
+		}
+		
+		.wcsim-btn {
+			padding: 8px 15px;
+			background-color: #0066cc;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 14px;
+		}
+		
+		.wcsim-btn:hover {
+			background-color: #0055aa;
+		}
+		
+		.wcsim-slider {
+			display: flex;
+			align-items: center;
+			margin-left: 15px;
+		}
+		
+		.wcsim-slider label {
+			margin-right: 10px;
+		}
+		
+		.wcsim-content {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+		
+		#wcsim-canvas-container {
+			width: 600px;
+			height: 400px;
+			background-color: #000;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+		
+		#wcsim-details {
+			flex: 1;
+			min-width: 300px;
+			max-width: 600px;
+			padding: 15px;
+			background-color: #fff;
+			border-radius: 4px;
+			box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+		}
+		
+		@media (max-width: 1024px) {
+			.wcsim-content {
+				flex-direction: column;
+			}
+			
+			#wcsim-canvas-container {
+				width: 100%;
+				max-width: 600px;
+			}
+		}
+	</style>
 </head>
 
 
@@ -45,6 +126,7 @@
 	<!-- js -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/app_main.js"></script>
+	<script type="text/javascript" src="scripts/wcsim.js"></script>
 
 <ul class="navbar">
 	<li class="navbar"><a href="chinese/index.html">中文</a></li>
@@ -61,18 +143,53 @@
 
 	<h1>
 		<div id="titles">
-			<div class="title">Li Cheng FENG<hr width=350px></div>
+			<div class="title">Li-Cheng FENG<hr width=350px></div>
 			<div class="subtitle">astroparticle physicist.in.training </div>
 		</div>
 	</h1>
 
 	<div class="default-text">
 		<p class="indent">
-		<img src="img/profile.jpg" style="float: left; margin:0px; padding: 5px 20px 5px 0px;" align="left" width=240px height=360px/>
-		I am now a PhD student at <a href="https://www-he.scphys.kyoto-u.ac.jp/member/index.html" target="_blank">Kyoto University</a>, studying experimental neutrino physics. Currently, I work on the <a href="https://www-sk.icrr.u-tokyo.ac.jp/sk/" target="_blank">Super-Kamiokande</a> and <a href="http://juno.ihep.cas.cn/" target="_blank">Jiangmen Underground Neutrino Observatory</a> collaboration with <a href="https://www-he.scphys.kyoto-u.ac.jp/member/raw/index.html"_blank">Prof. Roger Wendell</a> and <a href="https://phys.nycu.edu.tw/en/portfolio-item/%E6%9E%97%E8%B2%B4%E6%9E%97-%E6%95%99%E6%8E%88/" target="_blank">Prof. Guey-Lin Lin</a>. More generally, I am interested in the rare neutrino events, such as Diffuse Supernovae Neutrino Background, MeV Dark Matter and the related background surpressing method (photon hit pattern with CNN / pulse shape discrimination). 		</p>
+<img src="img/profile.jpg" style="float: left; margin:0px; padding: 5px 20px 5px 0px;" 
+        align="left" width=320px height=480px/>
+		I am now a PhD student at 
+		<a href="https://www-he.scphys.kyoto-u.ac.jp/member/index.html" target="_blank">Kyoto University</a>, 
+		studying experimental neutrino physics. Currently, I work on the 
+		<a href="https://www-sk.icrr.u-tokyo.ac.jp/sk/" target="_blank">Super-Kamiokande</a> and 
+		<a href="http://juno.ihep.cas.cn/" target="_blank">Jiangmen Underground Neutrino Observatory</a> collaboration with 
+		<a href="https://www-he.scphys.kyoto-u.ac.jp/member/raw/index.html"_blank">Prof. Roger Wendell</a> and 
+		<a href="https://phys.nycu.edu.tw/en/portfolio-item/%E6%9E%97%E8%B2%B4%E6%9E%97-%E6%95%99%E6%8E%88/" target="_blank">Prof. Guey-Lin Lin</a>. 
+		More generally, I am interested in the rare neutrino events, such as Diffuse Supernovae Neutrino Background, 
+		MeV Dark Matter and the related background surpressing method (photon hit pattern with NN, CNN / pulse shape discrimination). 
+	    Below is a simplified Super-K detertor simulator, inspired by WCSim. 
+		In general, we analyze the detector hit pattern to distinguish neutrinos from different physical targets, 
+		where a neutrino event typically produces numerous particles.</p>
 		<p class="indent">
 		Outside of physics, I spend time writing, hiking, watching movies, cooking spagettie, and (most importantly) playing with my cat.
 		</p>
+		
+		<!-- WCSim Simulation -->
+		<div class="wcsim-container">
+			
+			<div class="wcsim-controls">
+				<button id="electron-btn" class="wcsim-btn">Electron</button>
+				<button id="muon-btn" class="wcsim-btn">Muon</button>
+				<button id="neutron-btn" class="wcsim-btn">Neutron</button>
+				<button id="reset-view-btn" class="wcsim-btn">Reset View</button>
+				<div class="wcsim-slider">
+					<label for="rotation-speed">Rotation Speed:</label>
+					<input type="range" id="rotation-speed" min="0" max="10" value="0">
+				</div>
+			</div>
+			
+			<div class="wcsim-content">
+				<div id="wcsim-canvas-container"></div>
+				<div id="wcsim-details">
+					<h4>Select a particle to begin</h4>
+					<p>Click one of the particle buttons above to visualize its interaction in the detector.</p>
+				</div>
+			</div>
+		</div>
     
 	</div>
 
@@ -80,7 +197,16 @@
 
 	<div class="default-text">
 		<p class="indent">
-		Before coming to Kyoto Univ. I did my graduate at <a href="https://www.nycu.edu.tw/" target="_blank">NYCU</a>, undergraduate at <a href="https://www.ntnu.edu.tw/" target="_blank">National Taiwan Normal University</a>. I graduated in June 2018 with a B.S. in Physics with physics teacher certificate in senier high school. As an undergrad, I worked with <a href="https://www.asiaa.sinica.edu.tw/people/cv_c.php?i=kuan" target="_blank">Prof. Yi-Jehng Kuan</a> on Atacama Large Millimeter/submillimeter Array cycle-4 data analysis research, aim to claim a detection of important prebiotically molecular - pyrimidine.
+		Before coming to Kyoto Univ. I did my graduate at 
+		<a href="https://www.nycu.edu.tw/" target="_blank">NYCU</a>, 
+		undergraduate at 
+		<a href="https://www.ntnu.edu.tw/" target="_blank">NTNU</a>. 
+		I graduated in June 2018 with a B.S. in Physics with physics teacher certificate 
+		in senier high school. 
+		As an undergrad, I worked with 
+		<a href="https://www.asiaa.sinica.edu.tw/people/cv_c.php?i=kuan" target="_blank">Prof. Yi-Jehng Kuan</a> 
+		on Atacama Large Millimeter/submillimeter Array cycle-4 data analysis research, 
+		aim to claim a detection of important prebiotically molecular - pyrimidine.
 		</p>
 	</div>
 
@@ -93,17 +219,19 @@
 			<li class="intext">Offline</a>
 				<table>
 					<tr class="list">
-						<td><a href="https://www.phys.nctu.edu.tw/en/en_intro.htm" traget="_blank">Inst. of Physics, National Yang Ming Chiao Tung University</a><td/>
+						<td><a href="https://www-he.scphys.kyoto-u.ac.jp/" 
+							traget="_blank">Depart. of Physics and Astronomy, Kyoto University</a><td/>
 					</tr>
 					<tr class="list">
-						<td><a href="https://juno.ihep.ac.cn/collaboration.php" traget="_blank">JUNO collaboration</a><td/>
+						<td><a href="https://www-sk.icrr.u-tokyo.ac.jp/sk/" traget="_blank">
+							SuperK collaboration</a><td/>
 					</tr>
 				</table>
 			</li>
 			<li class="intext">Online</a>
 				<table>
 					<tr class="list">
-						<td>indigo40123.py07g@nctu.edu.tw<td/>
+						<td>feng.licheng.67p@st.kyoto-u.ac.jp<td/>
 					</tr>
 					<tr class="list">
 						<td><a href="//www.linkedin.com/in/licheng-feng" traget="_blank">LinkedIn</a><td/>

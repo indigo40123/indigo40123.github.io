@@ -6,13 +6,94 @@
 	<title>LiCheng Feng</title>
 	<link rel = "icon" type = "image/x-icon" href = "img/icon.png"/>
 	<link rel="stylesheet" type="text/css" href="main.css">
+	
+	<!-- Three.js library for WCSim -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+	
+	<style>
+		/* WCSim Styles */
+		.wcsim-container {
+			margin: 20px 0;
+			padding: 15px;
+			background-color: #f5f5f5;
+			border-radius: 8px;
+		}
+		
+		.wcsim-controls {
+			margin: 15px 0;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 10px;
+		}
+		
+		.wcsim-btn {
+			padding: 8px 15px;
+			background-color: #0066cc;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 14px;
+		}
+		
+		.wcsim-btn:hover {
+			background-color: #0055aa;
+		}
+		
+		.wcsim-slider {
+			display: flex;
+			align-items: center;
+			margin-left: 15px;
+		}
+		
+		.wcsim-slider label {
+			margin-right: 10px;
+		}
+		
+		.wcsim-content {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+		
+		#wcsim-canvas-container {
+			width: 600px;
+			height: 400px;
+			background-color: #000;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+		
+		#wcsim-details {
+			flex: 1;
+			min-width: 300px;
+			max-width: 600px;
+			padding: 15px;
+			background-color: #fff;
+			border-radius: 4px;
+			box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+		}
+		
+		@media (max-width: 1024px) {
+			.wcsim-content {
+				flex-direction: column;
+			}
+			
+			#wcsim-canvas-container {
+				width: 100%;
+				max-width: 600px;
+			}
+		}
+	</style>
 </head>
 
 
 
 <style type="text/css">
 	#bg-img1 {
-		background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("img/slac.jpg");
+		background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../img/slac.jpg");
 	}
 
 	#bg-img2 {
@@ -45,6 +126,7 @@
 	<!-- js -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/app_main.js"></script>
+	<script type="text/javascript" src="../scripts/wcsim.js"></script>
 
 <ul class="navbar">
 	<li class="navbar"><a href="../index.html">English</a></li>
@@ -68,12 +150,47 @@
 
 	<div class="default-text">
 		<p class="indent">
-		<img src="img/profile.jpg" style="float: left; margin:0px; padding: 5px 20px 5px 0px;" align="left" width=240px height=360px/>
-		我現在是 <a href="https://www-he.scphys.kyoto-u.ac.jp/member/index.html" target="_blank">京都大學</a>的博士班學生，正在進行微中子物理的相關實驗。 我在<a href="https://www-sk.icrr.u-tokyo.ac.jp/sk/" target="_blank">超級神岡探測器</a>和<a href="http://juno.ihep.cas.cn/" target="_blank">江門地下中微子實驗觀測站</a>團隊中求生。 更具體的來說，我的目標是尋找稀有的微中子訊號，像是超新星微中子遺跡(Supernovae Relic Neutrino)和暗物質(Dark Matter)。研究之餘，我對於物理教學也充滿熱情。
+		<img src="img/profile.jpg" style="float: left; margin:0px; padding: 5px 20px 5px 0px;" align="left" width=320px height=480px/>
+		我現在是 <a href="https://www-he.scphys.kyoto-u.ac.jp/member/index.html" 
+		target="_blank">京都大學</a>物理學、宇宙物理學系的博士班學生，
+		正在進行微中子物理的相關實驗。 我在<a href="https://www-sk.icrr.u-tokyo.ac.jp/sk/" 
+		target="_blank">超級神岡探測器團隊</a>和<a href="http://juno.ihep.cas.cn/" 
+		target="_blank">江門地下微中子實驗觀測站</a>團隊中與<a href="https://www-he.scphys.kyoto-u.ac.jp/member/raw/index.html"_blank">
+		Roger Wendell 教授</a>和<a href="https://phys.nycu.edu.tw/en/portfolio-item/%E6%9E%97%E8%B2%B4%E6%9E%97-%E6%95%99%E6%8E%88/" 
+		target="_blank">林貴林 教授</a>合作。更具體的來說，我的目標是尋找稀有的微中子訊號，
+		像是瀰散超新星微中子(Diffuse Supernovae Neutrino Background)、
+		MeV暗物質(MeV Dark Matter)以及相關的背景抑制方法
+		(使用神經網絡/卷積神經網絡應用在訊號辨別/液態閃爍體波形鑑別)。
+		以下是一個簡化的超級神岡探測器模擬器，靈感來自WCSim。一般來說，
+		我們分析微中子探測器的訊號分布，來區分不同來源的微中子，
+		基本上一個微中子反應通常會產生大量粒子，區分他們非常有挑戰性。
 		</p>
 		<p class="indent">
 		物理以外的部分，我常健行登山，欣賞電影，煮義大利麵，並且(也是最重要的)陪我家的貓玩.
 		</p>
+		
+		<!-- WCSim Simulation -->
+		<div class="wcsim-container">
+			
+			<div class="wcsim-controls">
+				<button id="electron-btn" class="wcsim-btn">電子</button>
+				<button id="muon-btn" class="wcsim-btn">渺子</button>
+				<button id="neutron-btn" class="wcsim-btn">中子</button>
+				<button id="reset-view-btn" class="wcsim-btn">視野重置</button>
+				<div class="wcsim-slider">
+					<label for="rotation-speed">旋轉速度:</label>
+					<input type="range" id="rotation-speed" min="0" max="10" value="0">
+				</div>
+			</div>
+			
+			<div class="wcsim-content">
+				<div id="wcsim-canvas-container"></div>
+				<div id="wcsim-details">
+					<h4>點選一個粒子</h4>
+					<p>點擊上方其中一個粒子的按鈕，來模擬探測器的反應。</p>
+				</div>
+			</div>
+		</div>
     
 	</div>
 
@@ -81,7 +198,13 @@
 
 	<div class="default-text">
 		<p class="indent">
-		在來到日本之前，我在<a href="https://www.nycu.edu.tw/" target="_blank">國立交通大學</a>物理所和<a href="https://www.ntnu.edu.tw/" target="_blank">臺灣師範大學</a>物理系就學。 我在大學時在<a href="https://www.asiaa.sinica.edu.tw/people/cv_c.php?i=kuan" target="_blank">管一政 教授</a>的團隊中負責<a href="https://www.almaobservatory.org/" target="_blank">阿塔卡瑪大型毫米及次毫米波陣列</a>的觀測數據分析，我們致力於證實獵戶座星雲中藏有天文生物界重要的有機分子-嘧啶。
+		在來到日本之前，我在<a href="https://www.nycu.edu.tw/" target="_blank">
+		國立交通大學</a>物理所和<a href="https://www.ntnu.edu.tw/" target="_blank">
+		臺灣師範大學</a>物理系就學。 我在大學時在
+		<a href="https://www.asiaa.sinica.edu.tw/people/cv_c.php?i=kuan" target="_blank">
+		管一政 教授</a>的團隊中負責<a href="https://www.almaobservatory.org/" target="_blank">
+		阿塔卡瑪大型毫米及次毫米波陣列</a>的觀測數據分析，
+		我們致力於證實獵戶座星雲中藏有天文生物界重要的有機分子-嘧啶。
 		</p>
 	</div>
 
@@ -94,10 +217,12 @@
 			<li class="intext">Offline</a>
 				<table>
 					<tr class="list">
-						<td><a href="https://www.phys.nctu.edu.tw/en/en_intro.htm" traget="_blank">物理研究所, 國立陽明交通大學</a><td/>
+						<td><a href="https://www-he.scphys.kyoto-u.ac.jp/" 
+							traget="_blank">京都大學物理學、宇宙物理學系</a><td/>
 					</tr>
 					<tr class="list">
-						<td><a href="https://juno.ihep.ac.cn/collaboration.php" traget="_blank">江門地下中微子實驗觀測站(JUNO)</a><td/>
+						<td><a href="https://www-sk.icrr.u-tokyo.ac.jp/sk/" traget="_blank">
+							超級神岡探測器團隊</a><td/>
 					</tr>
 				</table>
 			</li>
@@ -105,7 +230,7 @@
 				<table>
 
 					<tr class="list">
-						<td>indigo40123.py07g@nctu.edu.tw<td/>
+						<td>feng.licheng.67p@st.kyoto-u.ac.jp<td/>
 					</tr>
 
 					<tr class="list">
